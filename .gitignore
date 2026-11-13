@@ -1,0 +1,26 @@
+# Dependências
+node_modules/
+package-lock.json
+
+# Variáveis de ambiente sensíveis (chaves de API)
+.env
+.env.local
+*.env
+
+# Logs e arquivos de depuração
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+# Arquivos de sistema operacional e IDEs
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

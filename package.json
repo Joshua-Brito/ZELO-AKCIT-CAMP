@@ -1,0 +1,27 @@
+{
+  "name": "zelo-sus-agents",
+  "version": "1.0.0",
+  "description": "Zelo - Solução Multiagente de IA para a Atenção Básica do SUS (AKCIT Camp 2026 - Squad 13)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "@google/genai": "^3.3.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "openai": "^4.86.1"
+  },
+  "keywords": [
+    "sus",
+    "multi-agent",
+    "function-calling",
+    "rag",
+    "healthtech",
+    "b2g"
+  ],
+  "author": "Squad 13 (Joshua, Deyvson, Luiz e Cauã)",
+  "license": "MIT"
+}

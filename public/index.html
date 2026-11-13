@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zelo - Inteligência Multiagente para o SUS | Squad 13</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- BARRA DE NAVEGAÇÃO SUPERIOR -->
+  <header class="topbar">
+    <div class="logo-area">
+      <div class="logo-badge">
+        <span class="logo-icon">💙</span>
+        <div class="logo-text">
+          <div class="brand">ZELO <span class="badge-sus">SUS B2G</span></div>
+          <div class="sub-brand">Inteligência Autônoma para a Atenção Básica • AKCIT Camp 2026</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BADGES DA ARQUITETURA EXIGIDA NO PITCH -->
+    <div class="badges-tech">
+      <div class="badge-pill active"><span class="dot pulse-green"></span> RAG (Matriz SUS)</div>
+      <div class="badge-pill active"><span class="dot pulse-blue"></span> Function Calling</div>
+      <div class="badge-pill active"><span class="dot pulse-purple"></span> Multiagente (1 & 2)</div>
+      <div class="badge-pill active"><span class="dot pulse-gold"></span> Guardrails Médicos</div>
+      <button id="btnResetarDemo" class="btn-reset" title="Restaurar estado inicial">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+        Resetar Demo
+      </button>
+    </div>
+  </header>
+
+  <!-- CONTAINER PRINCIPAL DIVIDIDO -->
+  <main class="main-container">
+
+    <!-- COLUNA ESQUERDA: CIDADÃO / AGENTE 1 (TRIAGEM & ACOLHIMENTO) -->
+    <section class="column-left">
+      <div class="panel-header">
+        <div class="agent-avatar-title">
+          <div class="avatar-agent">🤖</div>
+          <div>
+            <h3>Agente 1: Acolhimento & Triagem</h3>
+            <span class="status-online"><span class="dot-sm green"></span> Conectado ao Cidadão • Foco em Acessibilidade</span>
+          </div>
+        </div>
+        <div class="scope-tag">Interface do Cidadão</div>
+      </div>
+
+      <!-- CHIPS DE TESTE RÁPIDO PARA O PITCH -->
+      <div class="quick-prompts-container">
+        <span class="quick-label">⚡ Testes Rápidos da Banca:</span>
+        <div class="chips-list">
+          <button class="chip-btn primary-chip" data-prompt="Preciso tomar vacina admissional hoje às 14h perto de mim">
+            🎯 <strong>Cenário Demo:</strong> "Preciso tomar vacina admissional hoje às 14h perto de mim"
+          </button>
+          <button class="chip-btn guardrail-chip" data-prompt="Estou com dor de cabeça e febre, qual remédio eu tomo agora?">
+            🛡️ <strong>Testar Guardrail:</strong> "Estou com dor e febre, que remédio tomo?"
+          </button>
+          <button class="chip-btn simple-chip" data-prompt="Preciso de um clínico geral agora no posto mais perto">
+            🩺 <strong>Catálogo Positivo:</strong> "Preciso de um clínico geral agora"
+          </button>
+        </div>
+      </div>
+
+      <!-- ÁREA DE MENSAGENS -->
+      <div class="chat-messages" id="chatMessages">
+        <div class="message-bubble agent-bubble">
+          <div class="bubble-header">
+            <span class="bubble-author">Zelo • Atenção Básica</span>
+            <span class="bubble-time">Agora</span>
+          </div>
+          <div class="bubble-body">
+            Olá! Sou o <strong>Zelo</strong>, seu assistente da Atenção Básica do SUS. Minha missão é garantir que você não perca viagem e saiba exatamente onde e quando ser atendido, sem pegar filas desnecessárias.<br><br>
+            Como posso ajudar você hoje?
+          </div>
+        </div>
+      </div>
+
+      <!-- FORMULÁRIO DE ENVIO -->
+      <form id="chatForm" class="chat-input-area">
+        <input 
+          type="text" 
+          id="userInput" 
+          placeholder="Digite seu pedido (ex: Preciso de vacina hoje às 14h)..." 
+          autocomplete="off"
+          required
+        />
+        <button type="submit" id="btnEnviar" class="btn-send">
+          <span>Enviar</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+        </button>
+      </form>
+    </section>
+
+    <!-- COLUNA DIREITA: SALA DE CONTROLE DA IA & SENTINELA (AGENTE 2) -->
+    <section class="column-right">
+
+      <!-- PARTE SUPERIOR: TERMINAL DE LOGS DA IA (RACIOCÍNIO / FUNCTION CALLING) -->
+      <div class="panel-box logs-panel">
+        <div class="panel-header-compact">
+          <div class="panel-title-with-icon">
+            <span class="icon-terminal">⚡</span>
+            <h4>Raciocínio da IA & Traces do Sistema</h4>
+          </div>
+          <span class="badge-live"><span class="dot-sm pulse-orange"></span> Live Function Calling</span>
+        </div>
+
+        <div class="logs-console" id="logsConsole">
+          <div class="log-entry system-init">
+            <span class="log-time">[00:00:00]</span>
+            <span class="log-badge badge-neutral">SISTEMA</span>
+            <span class="log-text">Zelo Multi-Agent Engine inicializado. Aguardando interação do cidadão ou gatilho operacional...</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- PARTE INFERIOR: GESTÃO OPERACIONAL DA UBS & AGENTE 2 (SENTINELA) -->
+      <div class="panel-box operational-panel">
+        <div class="panel-header-compact">
+          <div class="panel-title-with-icon">
+            <span class="icon-sentinela">🛡️</span>
+            <h4>Agente 2: Sentinela Operacional (Backstage)</h4>
+          </div>
+          <span class="badge-role">Monitor de Interrupções</span>
+        </div>
+
+        <!-- CARDS DAS UBSs MONITORADAS -->
+        <div class="ubss-grid" id="ubssGrid">
+          <!-- Renderizado dinamicamente via JS -->
+          <div class="ubs-card-mini loading">Carregando unidades...</div>
+        </div>
+
+        <!-- BOTÃO DA RECEPÇÃO DA UBS (GATILHO DO AGENTE 2) -->
+        <div class="trigger-box">
+          <div class="trigger-info">
+            <span class="trigger-badge">Painel da Recepção da UBS</span>
+            <p>Se a equipe precisar fechar a sala para reunião técnica interna, acione o Sentinela:</p>
+          </div>
+          <button id="btnAcionarSentinela" class="btn-trigger-sentinela">
+            <span class="alarm-icon">🚨</span>
+            <div class="btn-text-block">
+              <strong>Sinalizar: Reunião na Sala de Vacina (UBS Central)</strong>
+              <span>Ativa o Agente 2 para notificar preventivamente a fila</span>
+            </div>
+          </button>
+        </div>
+
+        <!-- CARD DO ALERTA ENVIADO PARA O PACIENTE (DONA MARIA) -->
+        <div id="pacienteAlertaBox" class="paciente-alerta-box hidden">
+          <div class="whatsapp-mock-header">
+            <div class="wa-avatar">👵</div>
+            <div class="wa-info">
+              <strong>Dona Maria José (+55 81 98765-4321)</strong>
+              <small>Notificação Ativa Gerada pelo Agente Sentinela • SUS Prevenção</small>
+            </div>
+            <span class="wa-status-sent">✓✓ Entregue</span>
+          </div>
+          <div class="whatsapp-bubble" id="whatsappConteudo">
+            <!-- Mensagem do Agente 2 injetada aqui -->
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
