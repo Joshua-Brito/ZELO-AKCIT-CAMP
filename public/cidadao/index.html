@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#005BAC">
+  <title>Zelo • Seu acesso tranquilo à UBS</title>
+  <link rel="stylesheet" href="/cidadao/cidadao.css">
+</head>
+<body>
+  <header class="app-header">
+    <div class="brand">
+      <span class="brand-heart" aria-hidden="true">💙</span>
+      <div>
+        <strong>Zelo</strong>
+        <small>Seu acesso tranquilo à UBS</small>
+      </div>
+    </div>
+    <div class="a11y-controls">
+      <button id="btnFonte" class="icon-btn" aria-label="Aumentar tamanho do texto" title="Aumentar texto">A+</button>
+      <button id="btnContraste" class="icon-btn" aria-label="Alternar alto contraste" title="Alto contraste">◐</button>
+    </div>
+  </header>
+
+  <main class="app-main">
+
+    <!-- ================= INÍCIO ================= -->
+    <section id="view-inicio" class="view active" aria-label="Início">
+      <h1 class="greeting" id="saudacao">Olá!</h1>
+      <p class="lead">O que a senhora ou o senhor precisa hoje? Eu confiro se o posto está aberto <strong>antes</strong> de você sair de casa.</p>
+
+      <div id="avisoBox" class="aviso hidden" role="alert"></div>
+
+      <div class="service-grid">
+        <button class="service-card" data-servico="vacinacao" data-label="vacina">
+          <span class="service-emoji">💉</span><span>Vacina</span>
+        </button>
+        <button class="service-card" data-servico="clinico_geral" data-label="consulta com clínico geral">
+          <span class="service-emoji">🩺</span><span>Clínico geral</span>
+        </button>
+        <button class="service-card" data-servico="pediatria" data-label="consulta de pediatria">
+          <span class="service-emoji">🧒</span><span>Pediatria</span>
+        </button>
+        <button class="service-card" data-servico="odontologia" data-label="atendimento odontológico">
+          <span class="service-emoji">🦷</span><span>Dentista</span>
+        </button>
+        <button class="service-card" data-servico="prenatal" data-label="pré-natal">
+          <span class="service-emoji">🤰</span><span>Pré-natal</span>
+        </button>
+        <button class="service-card" data-servico="curativos" data-label="curativo">
+          <span class="service-emoji">🩹</span><span>Curativos</span>
+        </button>
+      </div>
+
+      <button class="btn-primary btn-big" id="btnFalarZelo">💬 Conversar com o Zelo</button>
+
+      <p class="disclaimer">O Zelo cuida só da <strong>organização e do acesso</strong> às unidades. Ele não dá diagnósticos nem indica remédios. Em emergência, ligue <strong>192 (SAMU)</strong>.</p>
+    </section>
+
+    <!-- ================= CHAT ================= -->
+    <section id="view-chat" class="view" aria-label="Conversa com o Zelo">
+      <div class="chat-box" id="chatMessages" aria-live="polite">
+        <div class="bubble agent">
+          Olá! Sou o <strong>Zelo</strong>. Me diga o que precisa, por exemplo:<br>
+          <em>“Preciso tomar vacina hoje às 14h perto de mim”</em>
+        </div>
+      </div>
+
+      <div class="chat-suggestions" id="chatSugestoes">
+        <button class="chip" data-msg="Preciso tomar vacina admissional hoje às 14h perto de mim">💉 Vacina hoje às 14h</button>
+        <button class="chip" data-msg="Preciso de uma consulta com clínico geral agora">🩺 Clínico geral agora</button>
+        <button class="chip" data-msg="Estou com dor de cabeça e febre, qual remédio eu tomo?">❓ Pedir remédio</button>
+      </div>
+
+      <form id="chatForm" class="chat-form">
+        <button type="button" id="btnVoz" class="icon-btn round" aria-label="Falar em vez de digitar" title="Falar">🎤</button>
+        <input id="chatInput" type="text" placeholder="Escreva aqui o que precisa..." autocomplete="off" required aria-label="Mensagem">
+        <button type="submit" id="btnEnviar" class="btn-primary">Enviar</button>
+      </form>
+    </section>
+
+    <!-- ================= UNIDADES ================= -->
+    <section id="view-unidades" class="view" aria-label="Unidades de saúde">
+      <h2>Unidades perto de você</h2>
+      <p class="lead small">Situação conferida agora, em tempo real.</p>
+      <div class="filter-row" id="filtroServicos"></div>
+      <div id="listaUnidades" class="cards"></div>
+    </section>
+
+    <!-- ================= AGENDA ================= -->
+    <section id="view-agenda" class="view" aria-label="Meus agendamentos">
+      <h2>Meus agendamentos</h2>
+
+      <form id="perfilForm" class="perfil-form">
+        <label>Nome
+          <input id="perfilNome" type="text" required placeholder="Seu nome completo">
+        </label>
+        <label>Telefone (WhatsApp)
+          <input id="perfilTelefone" type="tel" required placeholder="(81) 90000-0000">
+        </label>
+        <button type="submit" class="btn-secondary">Salvar e atualizar</button>
+      </form>
+
+      <div id="listaAgendamentos" class="cards"></div>
+      <button class="btn-primary btn-big" id="btnNovoAgendamento">➕ Novo agendamento</button>
+    </section>
+
+  </main>
+
+  <nav class="bottom-nav" aria-label="Navegação principal">
+    <button class="nav-btn active" data-view="view-inicio"><span>🏠</span>Início</button>
+    <button class="nav-btn" data-view="view-chat"><span>💬</span>Zelo</button>
+    <button class="nav-btn" data-view="view-unidades"><span>🏥</span>Unidades</button>
+    <button class="nav-btn" data-view="view-agenda"><span>📅</span>Agenda</button>
+  </nav>
+
+  <!-- ================= MODAL DE AGENDAMENTO ================= -->
+  <div id="modalAgendar" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitulo">
+    <div class="modal-card">
+      <h3 id="modalTitulo">Novo agendamento</h3>
+      <form id="agendarForm">
+        <label>Serviço
+          <select id="agServico" required></select>
+        </label>
+        <label>Unidade
+          <select id="agUbs" required></select>
+        </label>
+        <label>Horário
+          <select id="agHorario" required>
+            <option>Hoje às 16h00</option>
+            <option>Hoje às 16h30</option>
+            <option>Amanhã às 08h00</option>
+            <option>Amanhã às 09h30</option>
+            <option>Amanhã às 14h00</option>
+          </select>
+        </label>
+        <div id="agErro" class="erro hidden" role="alert"></div>
+        <div class="modal-actions">
+          <button type="button" id="btnCancelarAg" class="btn-secondary">Cancelar</button>
+          <button type="submit" class="btn-primary">Confirmar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="toast" class="toast hidden" role="status"></div>
+
+  <script src="/cidadao/cidadao.js"></script>
+</body>
+</html>

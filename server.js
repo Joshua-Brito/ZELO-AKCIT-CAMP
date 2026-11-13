@@ -505,8 +505,62 @@ app.post("/api/paciente/agendar", (req, res) => {
     return res.status(400).json({ erro: "ubs_id e servico são obrigatórios." });
   }
 
+  const ubs = mock.obter_ubs_por_id(ubs_id);
+  if (!ubs) {
+    return res.status(404).json({ erro: "Unidade não encontrada." });
+  }
+  if (!ubs.servicos_disponiveis.includes(servico)) {
+    return res.status(422).json({ erro: `A ${ubs.nome} não oferece este serviço. Escolha outra unidade.` });
+  }
+  // Verificação de status ao vivo da sala antes de confirmar
+  const sala = ubs.salas.find(s => s.servico === servico);
+  if (sala && sala.status !== "aberto" && sala.status !== "aberto_normal") {
+    return res.status(409).json({
+      erro: `A sala está temporariamente fechada na ${ubs.nome}. Escolha outra unidade ou outro horário.`,
+      motivo: sala.motivo_interrupcao || ubs.motivo_status
+    });
+  }
+
   const novoAgendamento = mock.cadastrar_agendamento({ nome, telefone, servico, ubs_id, horario });
   res.json({ sucesso: true, agendamento: novoAgendamento });
+});
+
+/**
+ * GET /api/cidadao/agendamentos?telefone= - Portal do Cidadão: meus agendamentos
+ * com o status ao vivo da unidade associada
+ */
+app.get("/api/cidadao/agendamentos", (req, res) => {
+  const digitos = String(req.query.telefone || "").replace(/\D/g, "");
+  if (digitos.length < 8) {
+    return res.status(400).json({ erro: "Informe um telefone válido." });
+  }
+
+  const agendamentos = mock.obter_pacientes()
+    .filter(p => String(p.telefone).replace(/\D/g, "") === digitos)
+    .map(p => {
+      const ubs = mock.obter_ubs_por_id(p.ubs_id);
+      const sala = ubs ? ubs.salas.find(s => s.servico === p.servico) : null;
+      const salaAberta = !sala || sala.status === "aberto" || sala.status === "aberto_normal";
+      return {
+        id: p.id,
+        servico: p.servico,
+        horario: p.horario_agendado,
+        status_alerta: p.status_alerta,
+        remanejado_para: p.remanejado_para,
+        ubs: ubs ? { id: ubs.id, nome: ubs.nome, bairro: ubs.bairro } : null,
+        sala_aberta: salaAberta,
+        motivo: salaAberta ? null : (sala.motivo_interrupcao || ubs.motivo_status)
+      };
+    });
+
+  res.json({ agendamentos });
+});
+
+/**
+ * Frontend dedicado ao cidadão: http://localhost:3000/cidadao
+ */
+app.get(["/cidadao", "/app"], (req, res) => {
+  res.redirect("/cidadao/");
 });
 
 /**
