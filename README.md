@@ -146,3 +146,61 @@ npm start
    - Clique em **Remanejar p/ vizinha aberta** na linha da Dona Maria José e veja o status atualizar instantaneamente no App do Cidadão (`/cidadao`).
 3. **Abra o Portal da Gestão (`http://localhost:3000/gestao`):**
    - Filtre as unidades por **RPA (1 a 6)** e acompanhe os KPIs de viagens evitadas, alertas enviados e o **Log de Auditoria** atualizado em tempo real.
+
+
+Visão Geral da Arquitetura Multiagente
+O sistema opera com uma divisão de responsabilidades entre dois agentes autônomos integrados a uma camada de ferramentas (Tools):
+
+Snippet de código
+graph TD
+    A[Cidadão / Usuário] -->|Input em Linguagem Natural| B[Agente 1: Triagem & Acolhimento]
+    C[Recepção / Gestão UBS] -->|Alerta Operacional| D[Agente 2: Sentinela Operacional]
+    
+    subgraph Orquestração de IA & Ferramentas
+        B -->|RAG + Function Calling| E[(Catálogo Oficial SUS & Status ao Vivo)]
+        D -->|Busca Preditiva & Alerta| F[(Base de Agendados & Vizinhança)]
+    end
+    
+    E -->|Output: Janela e Ficha Segura| A
+    F -->|Output: Alerta Preventivo WhatsApp| A
+Detalhamento do Fluxo (Inputs, Lógica e Outputs)
+1. Agente 1: Triagem, Descoberta e Acolhimento (Foco no Cidadão)
+Inputs:
+
+Mensagem de texto ou áudio informal enviada pelo cidadão (ex.: "Preciso tomar vacina admissional hoje às 14h perto de casa").
+
+Contexto de localização do usuário (geolocalização ou bairro).
+
+Lógica de Raciocínio (Orquestração e Ferramentas):
+
+RAG (Retrieval-Augmented Generation): O agente consulta a base de dados oficial e vetorizada do município para cruzar o serviço desejado (vacinação) com a matriz real de competências de cada UBS, descartando unidades que não ofertam o procedimento.
+
+Function Calling (consultar_status_ao_vivo): Executa chamadas dinâmicas ao banco de dados operacional para verificar o status em tempo real da unidade (ex.: se a sala está aberta, se há vagas remanescentes ou se ocorreu interrupção temporária).
+
+Outputs:
+
+Resposta preditiva e orientativa ao usuário ("A UBS mais próxima não vacina e a segunda está em reunião interna; reservei sua senha prioritária para amanhã às 08h00 ou você pode ir à UBS San Martin que está vacinando agora").
+
+Emissão de protocolo digital / ficha de atendimento com janela horária garantida.
+
+2. Agente 2: Sentinela Operacional Autônomo (Foco na Gestão e Prevenção)
+Inputs:
+
+Evento operacional lançado pela recepcionista da UBS no painel administrativo (ex.: "Sala de vacina fechada para reunião de equipe" ou "Médico ausente por motivo de saúde").
+
+Lógica de Raciocínio (Orquestração e Ferramentas):
+
+Autonomia Baseada em Eventos (listar_afetados e realocar_vizinha): Ao receber o gatilho de imprevisto, o agente aciona a ferramenta de varredura para identificar instantaneamente todos os cidadãos que possuem fichas ou agendamentos confirmados para aquele turno na respectiva sala.
+
+Outputs:
+
+Disparo automático de alertas preventivos via WhatsApp para os cidadãos afetados antes que eles saiam de casa (barrando a viagem perdida).
+
+Sugestão automática de remanejamento para a UBS vizinha operante e atualização em tempo real do dashboard gerencial da Secretaria de Saúde.
+
+🛡️ Engenharia de Confiabilidade & Guardrails
+Bloqueio Clínico Estrito: O escopo do agente é 100% administrativo, logístico e de navegação. Guardrails rígidos no prompt de sistema impedem qualquer tentativa de diagnóstico médico ou prescrição de medicamentos.
+
+Prevenção de Alucinação: O RAG é restrito estritamente aos catálogos e regulamentos oficiais do município, impedindo invenção de horários ou serviços.
+
+Privacidade e LGPD: Dados de identificação (como CPF ou Cartão do SUS) são tokenizados e processados em ambiente seguro na nuvem, respeitando a conformidade com a legislação de proteção de dados.
