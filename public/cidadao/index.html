@@ -29,6 +29,17 @@
       <h1 class="greeting" id="saudacao">Olá!</h1>
       <p class="lead">O que a senhora ou o senhor precisa hoje? Eu confiro se o posto está aberto <strong>antes</strong> de você sair de casa.</p>
 
+      <div class="loc-bar" id="locBar">
+        <div class="loc-info">
+          <span aria-hidden="true">📍</span>
+          <span id="locTexto">Localização: <strong>Prado (padrão)</strong></span>
+        </div>
+        <div class="loc-actions">
+          <button type="button" id="btnUsarGps" class="btn-loc">Usar GPS</button>
+          <button type="button" id="btnAbrirLoc" class="btn-loc sec">CEP / Bairro</button>
+        </div>
+      </div>
+
       <div id="avisoBox" class="aviso hidden" role="alert"></div>
 
       <div class="service-grid">
@@ -113,6 +124,30 @@
     <button class="nav-btn" data-view="view-unidades"><span>🏥</span>Unidades</button>
     <button class="nav-btn" data-view="view-agenda"><span>📅</span>Agenda</button>
   </nav>
+
+  <!-- ================= MODAL DE LOCALIZAÇÃO (CEP / BAIRRO) ================= -->
+  <div id="modalLoc" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modalLocTitulo">
+    <div class="modal-card">
+      <h3 id="modalLocTitulo">Onde você está ou mora?</h3>
+      <p class="lead small">Usamos apenas para achar as UBSs mais próximas no Recife. Sua localização exata não é gravada.</p>
+      <form id="cepForm" style="margin-bottom:14px">
+        <label>Buscar por CEP
+          <div style="display:flex; gap:8px; margin-top:4px">
+            <input id="inputCep" type="tel" maxlength="9" placeholder="Ex: 50630-000" style="margin-top:0">
+            <button type="submit" class="btn-primary">Buscar</button>
+          </div>
+        </label>
+      </form>
+      <label>Ou escolha seu bairro no Recife
+        <select id="selectBairro"></select>
+      </label>
+      <div id="locErro" class="erro hidden" role="alert"></div>
+      <div class="modal-actions">
+        <button type="button" id="btnCancelarLoc" class="btn-secondary">Fechar</button>
+        <button type="button" id="btnSalvarBairro" class="btn-primary">Usar este bairro</button>
+      </div>
+    </div>
+  </div>
 
   <!-- ================= MODAL DE AGENDAMENTO ================= -->
   <div id="modalAgendar" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitulo">

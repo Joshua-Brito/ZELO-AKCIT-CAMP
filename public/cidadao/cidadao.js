@@ -15,10 +15,31 @@
 
   const state = {
     perfil: carregarPerfil(),
+    localizacao: carregarLocalizacao(),
     ubss: [],
     filtro: "todos",
     fonte: Number(localStorage.getItem("zelo_fonte") || 18)
   };
+
+  function carregarLocalizacao() {
+    try {
+      const s = JSON.parse(localStorage.getItem("zelo_loc"));
+      if (s && (s.lat != null || s.bairro)) return s;
+    } catch (_) {}
+    return { bairro: "PRADO", lat: -8.0638, lng: -34.9137, origem: "padrão" };
+  }
+
+  function salvarLocalizacao(loc) {
+    state.localizacao = loc;
+    localStorage.setItem("zelo_loc", JSON.stringify(loc));
+    atualizarTextoLocalizacao();
+  }
+
+  function atualizarTextoLocalizacao() {
+    const l = state.localizacao;
+    const label = l.bairro ? `${l.bairro} (${l.origem})` : `GPS (${l.lat.toFixed(3)}, ${l.lng.toFixed(3)})`;
+    if ($("locTexto")) $("locTexto").innerHTML = `Localização: <strong>${esc(label)}</strong>`;
+  }
 
   // ---------- Utilidades ----------
   function carregarPerfil() {
@@ -154,7 +175,7 @@
       const data = await api("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ mensagem })
+        body: JSON.stringify({ mensagem, localizacao: state.localizacao })
       });
       typing.remove();
       const bolha = addBolha(
@@ -206,7 +227,11 @@
   // ---------- Unidades ----------
   async function carregarUnidades() {
     try {
-      const data = await api("/api/status");
+      const l = state.localizacao;
+      const qs = l.lat != null && l.lng != null
+        ? `?lat=${encodeURIComponent(l.lat)}&lng=${encodeURIComponent(l.lng)}`
+        : (l.bairro ? `?bairro=${encodeURIComponent(l.bairro)}` : "");
+      const data = await api(`/api/status${qs}`);
       state.ubss = data.ubss;
       renderFiltros();
       renderUnidades();
@@ -357,6 +382,81 @@
       erro.textContent = err.message + (err.data && err.data.motivo ? ` (${err.data.motivo})` : "");
       erro.classList.remove("hidden");
     }
+  });
+
+  // ---------- Geolocalização (GPS + CEP + Bairro) ----------
+  atualizarTextoLocalizacao();
+
+  $("btnUsarGps").addEventListener("click", () => {
+    if (!("geolocation" in navigator)) {
+      return toast("Seu navegador não tem GPS. Use CEP ou bairro.");
+    }
+    toast("Obtendo sua localização…");
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        salvarLocalizacao({
+          lat: pos.coords.latitude,
+          lng: pos.coords.longitude,
+          bairro: null,
+          origem: "GPS"
+        });
+        toast("Localização atualizada pelo GPS! 📍");
+        if ($("view-unidades").classList.contains("active")) carregarUnidades();
+      },
+      () => toast("Não foi possível acessar o GPS. Tente informar seu CEP ou bairro."),
+      { enableHighAccuracy: false, timeout: 7000 }
+    );
+  });
+
+  $("btnAbrirLoc").addEventListener("click", async () => {
+    $("locErro").classList.add("hidden");
+    try {
+      const { bairros } = await api("/api/geo/bairros");
+      $("selectBairro").innerHTML = bairros
+        .map((b) => `<option value="${esc(b.nome)}" data-lat="${b.lat}" data-lng="${b.lng}">${esc(b.nome)}</option>`)
+        .join("");
+      if (state.localizacao.bairro) $("selectBairro").value = state.localizacao.bairro;
+    } catch (_) { /* mantém vazio se falhar */ }
+    $("modalLoc").classList.remove("hidden");
+  });
+
+  $("btnCancelarLoc").addEventListener("click", () => $("modalLoc").classList.add("hidden"));
+  $("modalLoc").addEventListener("click", (e) => { if (e.target.id === "modalLoc") e.target.classList.add("hidden"); });
+
+  $("cepForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    $("locErro").classList.add("hidden");
+    const cep = $("inputCep").value.replace(/\D/g, "");
+    try {
+      const res = await api(`/api/geo/cep/${cep}`);
+      salvarLocalizacao({
+        lat: res.latitude,
+        lng: res.longitude,
+        bairro: res.bairro || res.cidade,
+        origem: `CEP ${res.cep}`
+      });
+      $("modalLoc").classList.add("hidden");
+      toast(`Localização definida: ${res.bairro || res.cep} 📍`);
+      if ($("view-unidades").classList.contains("active")) carregarUnidades();
+    } catch (err) {
+      $("locErro").textContent = err.message;
+      $("locErro").classList.remove("hidden");
+    }
+  });
+
+  $("btnSalvarBairro").addEventListener("click", () => {
+    const sel = $("selectBairro");
+    const opt = sel.options[sel.selectedIndex];
+    if (!opt) return;
+    salvarLocalizacao({
+      lat: parseFloat(opt.dataset.lat),
+      lng: parseFloat(opt.dataset.lng),
+      bairro: opt.value,
+      origem: "bairro"
+    });
+    $("modalLoc").classList.add("hidden");
+    toast(`Bairro definido: ${opt.value} 📍`);
+    if ($("view-unidades").classList.contains("active")) carregarUnidades();
   });
 
   // ---------- Início ----------

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zelo • Portal da Recepção da UBS</title>
+  <link rel="stylesheet" href="/ubs/ubs.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo">🏥</span>
+      <div>
+        <strong>Zelo • Operação da UBS</strong>
+        <small>Painel da Recepção & Equipe Local • SUS Recife</small>
+      </div>
+    </div>
+
+    <div class="ubs-selector-wrap">
+      <label for="selectUbs">Unidade:</label>
+      <select id="selectUbs"></select>
+    </div>
+
+    <nav class="quick-links">
+      <a href="/cidadao" target="_blank">👤 App Cidadão</a>
+      <a href="/gestao" target="_blank">📊 Gestão B2G</a>
+      <button id="btnReset" class="btn-outline">🔄 Resetar Demo</button>
+    </nav>
+  </header>
+
+  <main class="container">
+    <!-- RESUMO DA UNIDADE -->
+    <section class="ubs-banner" id="ubsBanner">
+      <div class="ubs-meta">
+        <h1 id="ubsNome">Carregando unidade...</h1>
+        <p id="ubsEndereco">-</p>
+      </div>
+      <div class="ubs-kpis">
+        <div class="kpi"><span>CNES</span><strong id="ubsCnes">-</strong></div>
+        <div class="kpi"><span>Atendidos Hoje</span><strong id="ubsAtendidos">-</strong></div>
+        <div class="kpi"><span>Capacidade</span><strong id="ubsCapacidade">-</strong></div>
+        <div class="kpi"><span>Status</span><span id="ubsStatusBadge" class="badge">-</span></div>
+      </div>
+    </section>
+
+    <div class="grid-2">
+      <!-- CONTROLE DE SALAS + SENTINELA -->
+      <section class="card">
+        <div class="card-head">
+          <div>
+            <h2>🚪 Controle de Salas e Consultórios</h2>
+            <small>Altere o status em tempo real para atualizar o App do Cidadão</small>
+          </div>
+        </div>
+
+        <div id="salasList" class="salas-list"></div>
+
+        <div class="sentinela-box">
+          <div class="sentinela-head">
+            <span class="pill-danger">Agente 2 • Sentinela Operacional</span>
+            <h3>Contingência & Aviso Preventivo</h3>
+            <p>Ao sinalizar fechamento da Sala de Vacina, o Sentinela varre a fila e dispara alertas preventivos no WhatsApp antes do paciente sair de casa.</p>
+          </div>
+          <div class="sentinela-actions">
+            <input id="inputMotivoSentinela" type="text" value="Reunião técnica interna da equipe de enfermagem" placeholder="Motivo da interrupção...">
+            <button id="btnDispararSentinela" class="btn-danger">
+              🚨 Sinalizar Interrupção & Notificar Fila (Agente 2)
+            </button>
+          </div>
+          <div id="sentinelaResultado" class="sentinela-result hidden"></div>
+        </div>
+      </section>
+
+      <!-- FILA DE PACIENTES + REMANEJAMENTO -->
+      <section class="card">
+        <div class="card-head">
+          <div>
+            <h2>📋 Pacientes Agendados na Unidade</h2>
+            <small>Acompanhe alertas enviados e remaneje para unidades vizinhas abertas</small>
+          </div>
+          <button id="btnNovoPaciente" class="btn-primary-sm">+ Novo Check-in</button>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Paciente</th>
+                <th>Serviço</th>
+                <th>Horário</th>
+                <th>Status</th>
+                <th>Ação</th>
+              </tr>
+            </thead>
+            <tbody id="tabelaPacientes"></tbody>
+          </table>
+        </div>
+
+        <div class="vizinhas-box">
+          <h3>🗺️ Unidades Vizinhas Mais Próximas (Polos Receptores)</h3>
+          <div id="listaVizinhas" class="vizinhas-grid"></div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- MODAL NOVO CHECK-IN -->
+  <div id="modalCheckin" class="modal hidden">
+    <div class="modal-card">
+      <h3>Novo Check-in / Agendamento no Balcão</h3>
+      <form id="formCheckin">
+        <label>Nome do Paciente<input id="chkNome" required placeholder="Ex: José Carlos"></label>
+        <label>Telefone (WhatsApp)<input id="chkTel" required placeholder="(81) 99999-0000"></label>
+        <label>Serviço<select id="chkServico"></select></label>
+        <label>Horário<input id="chkHorario" value="Hoje às 16h00" required></label>
+        <div class="modal-actions">
+          <button type="button" id="btnCancelarChk" class="btn-outline">Cancelar</button>
+          <button type="submit" class="btn-primary-sm">Registrar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="toast" class="toast hidden"></div>
+  <script src="/ubs/ubs.js"></script>
+</body>
+</html>

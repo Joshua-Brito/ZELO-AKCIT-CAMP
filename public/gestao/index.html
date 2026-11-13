@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zelo • Gestão Municipal B2G (Prefeitura do Recife)</title>
+  <link rel="stylesheet" href="/gestao/gestao.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo">📊</span>
+      <div>
+        <strong>Zelo • Gestão Municipal B2G</strong>
+        <small>Secretaria de Saúde • Monitoramento da Rede de Atenção Básica</small>
+      </div>
+    </div>
+
+    <div class="controls">
+      <label for="filtroRpa">RPA Recife:</label>
+      <select id="filtroRpa">
+        <option value="todas">Todas as RPAs (22 UBSs)</option>
+        <option value="1">RPA 1 (Centro)</option>
+        <option value="2">RPA 2 (Norte)</option>
+        <option value="3">RPA 3 (Noroeste)</option>
+        <option value="4">RPA 4 (Oeste)</option>
+        <option value="5">RPA 5 (Sudoeste)</option>
+        <option value="6">RPA 6 (Sul)</option>
+      </select>
+    </div>
+
+    <nav class="quick-links">
+      <a href="/cidadao" target="_blank">👤 App Cidadão</a>
+      <a href="/ubs" target="_blank">🏥 Recepção UBS</a>
+      <button id="btnAtualizar" class="btn-outline">🔄 Atualizar</button>
+    </nav>
+  </header>
+
+  <main class="container">
+    <!-- BIG NUMBERS -->
+    <section class="kpi-grid">
+      <div class="kpi-card green">
+        <span>🚫 Viagens Perdidas Evitadas</span>
+        <strong id="kpiViagens">-</strong>
+        <small>Cidadãos alertados antes de sair</small>
+      </div>
+      <div class="kpi-card blue">
+        <span>⏱️ Horas de Fila Poupadas</span>
+        <strong id="kpiHoras">-</strong>
+        <small>Economizadas na madrugada</small>
+      </div>
+      <div class="kpi-card purple">
+        <span>🏥 Rede Monitorada</span>
+        <strong id="kpiRede">-</strong>
+        <small id="kpiRedeDetalhe">-</small>
+      </div>
+      <div class="kpi-card gold">
+        <span>🛡️ Guardrails Clínicos (100%)</span>
+        <strong id="kpiGuardrails">-</strong>
+        <small id="kpiAlertas">-</small>
+      </div>
+    </section>
+
+    <div class="grid-2">
+      <!-- DEMANDAS + RECOMENDAÇÃO IA -->
+      <section class="card">
+        <h2>📈 Demanda Real Capturada em Linguagem Natural</h2>
+        <div id="demandBars" class="demand-bars"></div>
+
+        <div class="ia-box">
+          <strong>💡 Recomendação Autônoma para Alocação de Equipes</strong>
+          <p id="iaRecomendacao">Analisando gargalos da rede...</p>
+        </div>
+      </section>
+
+      <!-- AUDITORIA EM TEMPO REAL -->
+      <section class="card">
+        <h2>📜 Auditoria de Eventos, Sentinela e Guardrails</h2>
+        <div id="auditLog" class="audit-log"></div>
+      </section>
+    </div>
+
+    <!-- TABELA DA REDE DE UBSs -->
+    <section class="card">
+      <div class="card-head">
+        <h2>🗺️ Unidades Básicas de Saúde do Recife (Dados Abertos + Status ao Vivo)</h2>
+        <span id="dbEngineBadge" class="badge info">-</span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>CNES</th>
+              <th>Unidade</th>
+              <th>Bairro / RPA</th>
+              <th>Serviços Mapeados</th>
+              <th>Ocupação</th>
+              <th>Status Atual</th>
+            </tr>
+          </thead>
+          <tbody id="tabelaRede"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script src="/gestao/gestao.js"></script>
+</body>
+</html>
