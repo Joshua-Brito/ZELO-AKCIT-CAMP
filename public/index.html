@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Zelo - Inteligência Multiagente para o SUS | Squad 13</title>
+  <title>Zelo - Ecossistema Multiagente para o SUS | Squad 13</title>
   <link rel="stylesheet" href="style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,158 +17,431 @@
         <span class="logo-icon">💙</span>
         <div class="logo-text">
           <div class="brand">ZELO <span class="badge-sus">SUS B2G</span></div>
-          <div class="sub-brand">Inteligência Autônoma para a Atenção Básica • AKCIT Camp 2026</div>
+          <div class="sub-brand">Ecossistema de Inteligência Autônoma para a Atenção Básica • Recife/PE</div>
         </div>
       </div>
     </div>
 
-    <!-- BADGES DA ARQUITETURA EXIGIDA NO PITCH -->
-    <div class="badges-tech">
-      <div class="badge-pill active"><span class="dot pulse-green"></span> RAG (Matriz SUS)</div>
-      <div class="badge-pill active"><span class="dot pulse-blue"></span> Function Calling</div>
-      <div class="badge-pill active"><span class="dot pulse-purple"></span> Multiagente (1 & 2)</div>
-      <div class="badge-pill active"><span class="dot pulse-gold"></span> Guardrails Médicos</div>
-      <button id="btnResetarDemo" class="btn-reset" title="Restaurar estado inicial">
+    <!-- SELETOR DE PORTAIS NAVEGÁVEIS (AS 3 VISÕES) -->
+    <nav class="portal-nav" id="portalNav">
+      <button class="nav-tab active" data-portal="portal-cidadao">
+        <span class="tab-icon">👤</span>
+        <div class="tab-text">
+          <strong>1. Portal do Cidadão</strong>
+          <small>Acolhimento & Triagem</small>
+        </div>
+      </button>
+
+      <button class="nav-tab" data-portal="portal-ubs">
+        <span class="tab-icon">🏥</span>
+        <div class="tab-text">
+          <strong>2. Recepção da UBS</strong>
+          <small>Operação Local das Salas</small>
+        </div>
+      </button>
+
+      <button class="nav-tab" data-portal="portal-gestao">
+        <span class="tab-icon">📊</span>
+        <div class="tab-text">
+          <strong>3. Gestão Municipal</strong>
+          <small>Painel B2G & Demanda</small>
+        </div>
+      </button>
+    </nav>
+
+    <!-- BADGES E AÇÕES RÁPIDAS -->
+    <div class="topbar-actions">
+      <div class="badge-pill active"><span class="dot pulse-blue"></span> Google Gemini AI</div>
+      <button id="btnResetarDemo" class="btn-reset" title="Restaurar estado inicial do banco">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
         Resetar Demo
       </button>
     </div>
   </header>
 
-  <!-- CONTAINER PRINCIPAL DIVIDIDO -->
-  <main class="main-container">
+  <!-- ======================================================== -->
+  <!-- PORTAL 1: CIDADÃO (USUÁRIO FINAL / DONA MARIA)           -->
+  <!-- ======================================================== -->
+  <main id="portal-cidadao" class="portal-view active">
+    <div class="main-container">
+      
+      <!-- COLUNA ESQUERDA: CHAT COM O AGENTE 1 -->
+      <section class="column-left">
+        <div class="panel-header">
+          <div class="agent-avatar-title">
+            <div class="avatar-agent">🤖</div>
+            <div>
+              <h3>Agente 1: Acolhimento & Triagem do SUS</h3>
+              <span class="status-online"><span class="dot-sm green"></span> Conectado via Google Gemini • Acessível para Idosos</span>
+            </div>
+          </div>
+          <div class="scope-tag">Atendimento ao Cidadão</div>
+        </div>
 
-    <!-- COLUNA ESQUERDA: CIDADÃO / AGENTE 1 (TRIAGEM & ACOLHIMENTO) -->
-    <section class="column-left">
-      <div class="panel-header">
-        <div class="agent-avatar-title">
-          <div class="avatar-agent">🤖</div>
+        <!-- CHIPS DE TESTE RÁPIDO PARA O PITCH -->
+        <div class="quick-prompts-container">
+          <span class="quick-label">⚡ Cenários Prontos para a Banca:</span>
+          <div class="chips-list">
+            <button class="chip-btn primary-chip" data-prompt="Preciso tomar vacina admissional hoje às 14h perto de mim">
+              🎯 <strong>Cenário Demo:</strong> "Preciso tomar vacina admissional hoje às 14h perto de mim"
+            </button>
+            <button class="chip-btn guardrail-chip" data-prompt="Estou com dor de cabeça e febre alta, qual remédio eu tomo agora?">
+              🛡️ <strong>Testar Guardrail:</strong> "Estou com dor e febre, qual remédio eu tomo?"
+            </button>
+            <button class="chip-btn simple-chip" data-prompt="Preciso de uma consulta com clínico geral agora">
+              🩺 <strong>Consulta Rápida:</strong> "Preciso de um clínico geral agora"
+            </button>
+          </div>
+        </div>
+
+        <!-- ÁREA DE MENSAGENS -->
+        <div class="chat-messages" id="chatMessages">
+          <div class="message-bubble agent-bubble">
+            <div class="bubble-header">
+              <span class="bubble-author">Zelo • Atenção Básica</span>
+              <span class="bubble-time">Agora</span>
+            </div>
+            <div class="bubble-body">
+              Olá! Sou o <strong>Zelo</strong>, seu assistente da Atenção Básica do SUS. Minha missão é garantir que você não perca viagem e saiba exatamente onde e quando ser atendido, sem pegar filas desnecessárias.<br><br>
+              Como posso ajudar você hoje?
+            </div>
+          </div>
+        </div>
+
+        <!-- FORMULÁRIO DE ENVIO -->
+        <form id="chatForm" class="chat-input-area">
+          <input 
+            type="text" 
+            id="userInput" 
+            placeholder="Digite sua dúvida ou pedido (ex: Vacina às 14h perto de mim)..." 
+            autocomplete="off"
+            required
+          />
+          <button type="submit" id="btnEnviar" class="btn-send">
+            <span>Enviar</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+          </button>
+        </form>
+      </section>
+
+      <!-- COLUNA DIREITA: TRACES DA IA + CARTEIRA DIGITAL DO CIDADÃO -->
+      <section class="column-right">
+
+        <!-- TERMINAL DE LOGS DA IA -->
+        <div class="panel-box logs-panel">
+          <div class="panel-header-compact">
+            <div class="panel-title-with-icon">
+              <span class="icon-terminal">⚡</span>
+              <h4>Raciocínio da IA & Traces do Sistema</h4>
+            </div>
+            <span class="badge-live"><span class="dot-sm pulse-orange"></span> Live Function Calling</span>
+          </div>
+
+          <div class="logs-console" id="logsConsole">
+            <div class="log-entry system-init">
+              <span class="log-time">[00:00:00]</span>
+              <span class="log-badge badge-neutral">SISTEMA</span>
+              <span class="log-text">Zelo Multi-Agent Engine inicializado. Modelo: Google Gemini (com fallback autônomo).</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- CARTEIRA DIGITAL DO CIDADÃO / AGENDAMENTO ATIVO -->
+        <div class="panel-box carteira-cidadao-panel">
+          <div class="panel-header-compact">
+            <div class="panel-title-with-icon">
+              <span class="icon-sentinela">🎫</span>
+              <h4>Minha Ficha Digital Zelo (Dona Maria)</h4>
+            </div>
+            <span class="badge-role">Checagem de Deslocamento</span>
+          </div>
+
+          <div class="ticket-card" id="ticketCard">
+            <div class="ticket-header">
+              <div class="ticket-user">
+                <span class="ticket-avatar">👵</span>
+                <div>
+                  <strong>Dona Maria José da Silva</strong>
+                  <small>SUS: 892 1094 3821 0019 • 67 anos</small>
+                </div>
+              </div>
+              <div class="ticket-badge-live" id="ticketStatusBadge">
+                <span class="dot-sm pulse-orange"></span> SALA EM REUNIÃO
+              </div>
+            </div>
+
+            <div class="ticket-details">
+              <div class="ticket-item">
+                <span class="ticket-label">Procedimento:</span>
+                <span class="ticket-val">💉 Vacinação (Dose Adulto)</span>
+              </div>
+              <div class="ticket-item">
+                <span class="ticket-label">Unidade Designada:</span>
+                <span class="ticket-val" id="ticketUbsNome">UBS 02 - Central da Saúde (Afogados)</span>
+              </div>
+              <div class="ticket-item">
+                <span class="ticket-label">Horário Previsto:</span>
+                <span class="ticket-val">Hoje às 14h15</span>
+              </div>
+              <div class="ticket-item">
+                <span class="ticket-label">Alerta Preventivo:</span>
+                <span class="ticket-val ticket-alert-txt" id="ticketAlertTxt">⚠️ NÃO SAIR DE CASA: Sala fechada para reunião técnica.</span>
+              </div>
+            </div>
+
+            <!-- SIMULADOR DE WHATSAPP RECEBIDO PELA DONA MARIA -->
+            <div id="pacienteAlertaBox" class="paciente-alerta-box">
+              <div class="whatsapp-mock-header">
+                <div class="wa-avatar">👵</div>
+                <div class="wa-info">
+                  <strong>Notificação WhatsApp do Zelo</strong>
+                  <small>Alerta Preventivo Ativo • Evitando Viagem Perdida</small>
+                </div>
+                <span class="wa-status-sent">✓✓ Entregue</span>
+              </div>
+              <div class="whatsapp-bubble" id="whatsappConteudo">
+                Olá, Dona Maria! Passando para avisar para a senhora <strong>NÃO SAIR DE CASA agora</strong> para a sua vacina das 14h15. A equipe da UBS Central entrou em reunião técnica interna. Já pré-reservamos sua vaga para amanhã às 08h ou a senhora pode ir até a UBS San Martin que está aberta agora!
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ======================================================== -->
+  <!-- PORTAL 2: RECEPÇÃO DA UBS (OPERAÇÃO LOCAL / ROSANA)     -->
+  <!-- ======================================================== -->
+  <main id="portal-ubs" class="portal-view">
+    <div class="ubs-portal-container">
+      
+      <!-- TOPO DA UBS: SELEÇÃO DA UNIDADE E STATUS GERAL -->
+      <div class="ubs-top-card">
+        <div class="ubs-info-header">
+          <div class="ubs-logo-badge">🏥</div>
           <div>
-            <h3>Agente 1: Acolhimento & Triagem</h3>
-            <span class="status-online"><span class="dot-sm green"></span> Conectado ao Cidadão • Foco em Acessibilidade</span>
+            <h2>Painel da Recepção & Coordenação Operacional</h2>
+            <p>Unidade ativa: <strong id="ubsOperacionalNome">UBS 02 - Central da Saúde (Afogados, Recife)</strong></p>
           </div>
         </div>
-        <div class="scope-tag">Interface do Cidadão</div>
-      </div>
 
-      <!-- CHIPS DE TESTE RÁPIDO PARA O PITCH -->
-      <div class="quick-prompts-container">
-        <span class="quick-label">⚡ Testes Rápidos da Banca:</span>
-        <div class="chips-list">
-          <button class="chip-btn primary-chip" data-prompt="Preciso tomar vacina admissional hoje às 14h perto de mim">
-            🎯 <strong>Cenário Demo:</strong> "Preciso tomar vacina admissional hoje às 14h perto de mim"
-          </button>
-          <button class="chip-btn guardrail-chip" data-prompt="Estou com dor de cabeça e febre, qual remédio eu tomo agora?">
-            🛡️ <strong>Testar Guardrail:</strong> "Estou com dor e febre, que remédio tomo?"
-          </button>
-          <button class="chip-btn simple-chip" data-prompt="Preciso de um clínico geral agora no posto mais perto">
-            🩺 <strong>Catálogo Positivo:</strong> "Preciso de um clínico geral agora"
-          </button>
-        </div>
-      </div>
-
-      <!-- ÁREA DE MENSAGENS -->
-      <div class="chat-messages" id="chatMessages">
-        <div class="message-bubble agent-bubble">
-          <div class="bubble-header">
-            <span class="bubble-author">Zelo • Atenção Básica</span>
-            <span class="bubble-time">Agora</span>
+        <div class="ubs-stats-strip">
+          <div class="strip-item">
+            <span class="strip-label">Capacidade Diária</span>
+            <strong class="strip-val">160 fichas</strong>
           </div>
-          <div class="bubble-body">
-            Olá! Sou o <strong>Zelo</strong>, seu assistente da Atenção Básica do SUS. Minha missão é garantir que você não perca viagem e saiba exatamente onde e quando ser atendido, sem pegar filas desnecessárias.<br><br>
-            Como posso ajudar você hoje?
+          <div class="strip-item">
+            <span class="strip-label">Atendidos Hoje</span>
+            <strong class="strip-val" id="countAtendidosHoje">42</strong>
+          </div>
+          <div class="strip-item">
+            <span class="strip-label">Fila na Espera</span>
+            <strong class="strip-val" id="countFilaEspera">8 pacientes</strong>
+          </div>
+          <div class="strip-item">
+            <span class="strip-label">Status Geral</span>
+            <span class="ubs-badge-status status-tag-reuniao" id="ubsStatusTagGeral">🔴 INTERRUPÇÃO EM SALA</span>
           </div>
         </div>
       </div>
 
-      <!-- FORMULÁRIO DE ENVIO -->
-      <form id="chatForm" class="chat-input-area">
-        <input 
-          type="text" 
-          id="userInput" 
-          placeholder="Digite seu pedido (ex: Preciso de vacina hoje às 14h)..." 
-          autocomplete="off"
-          required
-        />
-        <button type="submit" id="btnEnviar" class="btn-send">
-          <span>Enviar</span>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-        </button>
-      </form>
-    </section>
-
-    <!-- COLUNA DIREITA: SALA DE CONTROLE DA IA & SENTINELA (AGENTE 2) -->
-    <section class="column-right">
-
-      <!-- PARTE SUPERIOR: TERMINAL DE LOGS DA IA (RACIOCÍNIO / FUNCTION CALLING) -->
-      <div class="panel-box logs-panel">
-        <div class="panel-header-compact">
-          <div class="panel-title-with-icon">
-            <span class="icon-terminal">⚡</span>
-            <h4>Raciocínio da IA & Traces do Sistema</h4>
+      <!-- GRID PRINCIPAL DA UBS: CONTROLE DE SALAS + GATILHO SENTINELA + FILA DE PACIENTES -->
+      <div class="ubs-layout-grid">
+        
+        <!-- COLUNA 1: GESTÃO DAS SALAS INDIVIDUAIS -->
+        <div class="ubs-card-col">
+          <div class="col-header">
+            <h3>🚪 Controle das Salas e Consultórios em Tempo Real</h3>
+            <small>Altere o status para disparar contingência automática</small>
           </div>
-          <span class="badge-live"><span class="dot-sm pulse-orange"></span> Live Function Calling</span>
-        </div>
 
-        <div class="logs-console" id="logsConsole">
-          <div class="log-entry system-init">
-            <span class="log-time">[00:00:00]</span>
-            <span class="log-badge badge-neutral">SISTEMA</span>
-            <span class="log-text">Zelo Multi-Agent Engine inicializado. Aguardando interação do cidadão ou gatilho operacional...</span>
+          <div class="salas-list" id="salasList">
+            <!-- Renderizado dinamicamente via JS -->
+            <div class="sala-item-card">Carregando salas...</div>
           </div>
-        </div>
-      </div>
 
-      <!-- PARTE INFERIOR: GESTÃO OPERACIONAL DA UBS & AGENTE 2 (SENTINELA) -->
-      <div class="panel-box operational-panel">
-        <div class="panel-header-compact">
-          <div class="panel-title-with-icon">
-            <span class="icon-sentinela">🛡️</span>
-            <h4>Agente 2: Sentinela Operacional (Backstage)</h4>
-          </div>
-          <span class="badge-role">Monitor de Interrupções</span>
-        </div>
-
-        <!-- CARDS DAS UBSs MONITORADAS -->
-        <div class="ubss-grid" id="ubssGrid">
-          <!-- Renderizado dinamicamente via JS -->
-          <div class="ubs-card-mini loading">Carregando unidades...</div>
-        </div>
-
-        <!-- BOTÃO DA RECEPÇÃO DA UBS (GATILHO DO AGENTE 2) -->
-        <div class="trigger-box">
-          <div class="trigger-info">
-            <span class="trigger-badge">Painel da Recepção da UBS</span>
-            <p>Se a equipe precisar fechar a sala para reunião técnica interna, acione o Sentinela:</p>
-          </div>
-          <button id="btnAcionarSentinela" class="btn-trigger-sentinela">
-            <span class="alarm-icon">🚨</span>
-            <div class="btn-text-block">
-              <strong>Sinalizar: Reunião na Sala de Vacina (UBS Central)</strong>
-              <span>Ativa o Agente 2 para notificar preventivamente a fila</span>
+          <!-- BOTÃO GATILHO DO AGENTE 2 (SENTINELA) -->
+          <div class="contingencia-box">
+            <div class="contingencia-info">
+              <span class="alarm-badge">Ação Imediata da Recepção</span>
+              <h4>Gatilho de Contingência do Sentinela</h4>
+              <p>Acione o Agente 2 para varrer imediatamente os pacientes agendados e enviar avisos preventivos no WhatsApp:</p>
             </div>
-          </button>
+            <button id="btnAcionarSentinelaPortalUbs" class="btn-trigger-sentinela-full">
+              <span class="alarm-icon">🚨</span>
+              <div class="btn-text-block">
+                <strong>Disparar Alerta Sentinela: Reunião na Sala de Vacina</strong>
+                <span>Varre a fila e notifica Dona Maria e outros pacientes agora</span>
+              </div>
+            </button>
+          </div>
         </div>
 
-        <!-- CARD DO ALERTA ENVIADO PARA O PACIENTE (DONA MARIA) -->
-        <div id="pacienteAlertaBox" class="paciente-alerta-box hidden">
-          <div class="whatsapp-mock-header">
-            <div class="wa-avatar">👵</div>
-            <div class="wa-info">
-              <strong>Dona Maria José (+55 81 98765-4321)</strong>
-              <small>Notificação Ativa Gerada pelo Agente Sentinela • SUS Prevenção</small>
-            </div>
-            <span class="wa-status-sent">✓✓ Entregue</span>
+        <!-- COLUNA 2: FILA DE PACIENTES DO DIA & REMANEJAMENTO -->
+        <div class="ubs-card-col">
+          <div class="col-header">
+            <h3>📋 Pacientes Agendados no Dia & Fila de Espera</h3>
+            <small>Monitore quem foi notificado e faça remanejamentos ativos</small>
           </div>
-          <div class="whatsapp-bubble" id="whatsappConteudo">
-            <!-- Mensagem do Agente 2 injetada aqui -->
+
+          <div class="pacientes-table-container">
+            <table class="pacientes-table">
+              <thead>
+                <tr>
+                  <th>Paciente</th>
+                  <th>Procedimento</th>
+                  <th>Horário</th>
+                  <th>Status do Alerta</th>
+                  <th>Ação Rápida</th>
+                </tr>
+              </thead>
+              <tbody id="pacientesTableBody">
+                <!-- Renderizado via JS -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- STATUS DAS UNIDADES VIZINHAS PARA REMANEJAMENTO -->
+          <div class="unidades-vizinhas-box">
+            <h4>🗺️ Polos Receptores Vizinhos (Para Encaminhamento)</h4>
+            <div class="vizinhas-grid">
+              <div class="vizinha-item">
+                <strong>UBS 03 - San Martin</strong>
+                <span class="status-tag-aberto">🟢 Aberto Normal</span>
+                <p>Vacinação em dia • Fila: 1 pessoa • 14 min</p>
+                <button class="btn-micro-action" onclick="remanejarTodosParaSanMartin()">Remanejar Fila de Vacina p/ San Martin</button>
+              </div>
+              <div class="vizinha-item">
+                <strong>UBS 01 - Vila Esperança</strong>
+                <span class="status-tag-aberto">🟢 Aberto Normal</span>
+                <p>Clínico Geral e Pediatria • Sem Vacina • 4 min</p>
+              </div>
+            </div>
           </div>
         </div>
 
       </div>
 
-    </section>
+    </div>
+  </main>
 
+  <!-- ======================================================== -->
+  <!-- PORTAL 3: GESTÃO MUNICIPAL (SECRETARIA DE SAÚDE / B2G)   -->
+  <!-- ======================================================== -->
+  <main id="portal-gestao" class="portal-view">
+    <div class="gestao-portal-container">
+      
+      <!-- CABEÇALHO DO GESTOR MUNICIPAL -->
+      <div class="gestao-header">
+        <div class="gestao-title">
+          <div class="gestao-icon">🏛️</div>
+          <div>
+            <h2>Secretaria de Saúde do Recife • Painel Executivo Zelo B2G</h2>
+            <p>Monitoramento Epidemiológico, Eficiência Operacional e Previsibilidade na Atenção Básica</p>
+          </div>
+        </div>
+        <div class="gestao-badge-pill">
+          <span class="dot-sm green"></span> 100% dos Postos Monitorados em Tempo Real
+        </div>
+      </div>
+
+      <!-- BIG NUMBERS / KPIS MACRO -->
+      <div class="kpi-grid">
+        <div class="kpi-card highlight-green">
+          <div class="kpi-icon">🚫</div>
+          <div class="kpi-content">
+            <span class="kpi-label">Viagens Perdidas Evitadas</span>
+            <h3 class="kpi-number" id="kpiViagensEvitadas">1.482</h3>
+            <span class="kpi-subtext">Cidadãos alertados antes de sair de casa</span>
+          </div>
+        </div>
+
+        <div class="kpi-card highlight-blue">
+          <div class="kpi-icon">⏱️</div>
+          <div class="kpi-content">
+            <span class="kpi-label">Horas de Fila Poupadas</span>
+            <h3 class="kpi-number" id="kpiHorasPoupadas">4.890h</h3>
+            <span class="kpi-subtext">Economizadas na madrugada e esperas</span>
+          </div>
+        </div>
+
+        <div class="kpi-card highlight-purple">
+          <div class="kpi-icon">📉</div>
+          <div class="kpi-content">
+            <span class="kpi-label">Queda na Taxa de No-Show</span>
+            <h3 class="kpi-number">-78.7%</h3>
+            <span class="kpi-subtext">Absenteísmo caiu de 38% para 8.2%</span>
+          </div>
+        </div>
+
+        <div class="kpi-card highlight-gold">
+          <div class="kpi-icon">💰</div>
+          <div class="kpi-content">
+            <span class="kpi-label">Economia Operacional Estimada</span>
+            <h3 class="kpi-number" id="kpiEconomia">R$ 194.200</h3>
+            <span class="kpi-subtext">Em transporte sanitário e retrabalho</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- GRÁFICOS E DEMANDAS -->
+      <div class="gestao-columns-grid">
+        
+        <!-- CARD 1: DEMANDA REPRIMIDA POR SERVIÇO -->
+        <div class="gestao-card">
+          <div class="card-head">
+            <h4>📊 Distribuição da Demanda Real do Cidadão</h4>
+            <small>Identificada via RAG e intenções em linguagem natural</small>
+          </div>
+          <div class="demand-bars" id="demandBarsContainer">
+            <!-- Injetado dinamicamente via JS -->
+          </div>
+        </div>
+
+        <!-- CARD 2: PRESSÃO TERRITORIAL E ALERTAS DOS AGENTES -->
+        <div class="gestao-card">
+          <div class="card-head">
+            <h4>🛡️ Conformidade dos Agentes & Guardrails Clínicos</h4>
+            <small>Auditoria contínua de segurança médica no SUS</small>
+          </div>
+
+          <div class="compliance-box">
+            <div class="compliance-score">
+              <span class="score-number">100%</span>
+              <span class="score-label">Conformidade com Guardrails</span>
+            </div>
+            <div class="compliance-details">
+              <div class="comp-item">
+                <span>Bloqueios de Diagnóstico/Prescrição:</span>
+                <strong id="kpiGuardrailsBloqueados">147 interceptações seguras</strong>
+              </div>
+              <div class="comp-item">
+                <span>Alertas Preventivos Disparados:</span>
+                <strong id="kpiAlertasDisparados">312 avisos via WhatsApp</strong>
+              </div>
+              <div class="comp-item">
+                <span>Índice de Satisfação do Cidadão:</span>
+                <strong>NPS +89 (Excelente)</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- RECOMENDAÇÃO AUTÔNOMA DA IA PARA O GESTOR -->
+          <div class="ia-suggestion-card">
+            <div class="ia-sug-header">
+              <span>💡 Recomendação Autônoma Zelo:</span>
+            </div>
+            <p>
+              "Identificamos que <strong>Afogados (UBS Central)</strong> concentra 43% dos pedidos de vacina e está com sala temporariamente interrompida. Recomenda-se remanejamento de 1 profissional de enfermagem da UBS Vila Esperança (com demanda estabilizada) para equilibrar a capacidade até amanhã às 08h."
+            </p>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
   </main>
 
   <script src="app.js"></script>

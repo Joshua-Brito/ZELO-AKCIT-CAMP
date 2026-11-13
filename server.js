@@ -446,6 +446,70 @@ app.get("/api/status", (req, res) => {
 });
 
 /**
+ * GET /api/gestao/kpis - Portal de Gestão Municipal (B2G)
+ */
+app.get("/api/gestao/kpis", (req, res) => {
+  res.json({
+    kpis: mock.obter_kpis_gestao(),
+    ubss: mock.obter_todas_ubss(),
+    pacientes: mock.obter_pacientes()
+  });
+});
+
+/**
+ * GET /api/ubs/:id - Dados específicos de uma UBS com salas operacionais
+ */
+app.get("/api/ubs/:id", (req, res) => {
+  const ubs = mock.obter_ubs_por_id(req.params.id);
+  if (!ubs) return res.status(404).json({ erro: "UBS não encontrada" });
+  const pacientes = mock.obter_pacientes().filter(p => p.ubs_id === req.params.id);
+  res.json({ ubs, pacientes });
+});
+
+/**
+ * POST /api/ubs/sala-status - Portal da UBS: Recepção altera status de sala
+ */
+app.post("/api/ubs/sala-status", (req, res) => {
+  const { ubs_id, sala_id, novo_status, motivo } = req.body;
+  if (!ubs_id || !sala_id || !novo_status) {
+    return res.status(400).json({ erro: "Parâmetros insuficientes." });
+  }
+
+  const resultado = mock.alterar_status_sala(ubs_id, sala_id, novo_status, motivo);
+  if (resultado.erro) return res.status(400).json(resultado);
+
+  res.json({ sucesso: true, resultado });
+});
+
+/**
+ * POST /api/paciente/remanejar - Portal da UBS: Remanejamento ativo de paciente
+ */
+app.post("/api/paciente/remanejar", (req, res) => {
+  const { paciente_id, destino_ubs_id } = req.body;
+  if (!paciente_id || !destino_ubs_id) {
+    return res.status(400).json({ erro: "paciente_id e destino_ubs_id são obrigatórios." });
+  }
+
+  const resultado = mock.remanejar_paciente(paciente_id, destino_ubs_id);
+  if (resultado.erro) return res.status(400).json(resultado);
+
+  res.json(resultado);
+});
+
+/**
+ * POST /api/paciente/agendar - Portal do Cidadão: Novo agendamento digital
+ */
+app.post("/api/paciente/agendar", (req, res) => {
+  const { nome, telefone, servico, ubs_id, horario } = req.body;
+  if (!ubs_id || !servico) {
+    return res.status(400).json({ erro: "ubs_id e servico são obrigatórios." });
+  }
+
+  const novoAgendamento = mock.cadastrar_agendamento({ nome, telefone, servico, ubs_id, horario });
+  res.json({ sucesso: true, agendamento: novoAgendamento });
+});
+
+/**
  * POST /api/reset - Restaura os dados originais para nova demonstração
  */
 app.post("/api/reset", (req, res) => {

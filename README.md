@@ -1,4 +1,4 @@
-# 💙 Zelo — Dignidade e Previsibilidade no Acesso às UBS via Agentes de IA
+# 💙 Zelo — Ecossistema Multiagente de IA para a Atenção Básica do SUS
 > **AKCIT Camp Multicêntrico 2026 — Etapa Regional Nordeste (Recife/PE)**  
 > **Squad 13:** Joshua, Deyvson, Luiz e Cauã  
 > **Tema:** B2G / GovTech / HealthTech — Eliminação de filas da madrugada e viagens perdidas na Atenção Básica do SUS.
@@ -11,93 +11,73 @@
 
 ---
 
-## 1. O Problema Real (Evidência e Validação)
-Milhares de cidadãos enfrentam dois gargalos invisíveis na Atenção Básica do SUS:
-1. **Filas de madrugada sem garantia de ficha:** Pacientes idosos (como nossa persona Dona Maria, 68 anos) e trabalhadores chegam às UBSs entre 04h00 e 06h00 sem saber se haverá fichas ou médico disponível.
-2. **Desinformação operacional em tempo real:** Ferramentas genéricas informam apenas distância e horário comercial padrão, ignorando **catálogos reais de serviços** (ex.: postos que não aplicam vacinas) e **interrupções operacionais momentâneas** (ex.: salas fechadas por reuniões internas de equipe ou falta médica). Isso gera múltiplas viagens perdidas no mesmo dia.
+## 🎯 A Solução: Os 3 Portais Navegáveis Integrados
 
----
-
-## 2. A Solução Zelo
-O **Zelo** é um sistema multiagente autônomo que atua como ponte inteligente entre a realidade operacional da UBS e a necessidade imediata do cidadão. Ele elimina deslocamentos desnecessários cruzando a intenção do usuário com a matriz real de serviços das unidades e o status operacional ao vivo, além de disparar alertas preventivos antes que o paciente saia de casa.
-
----
-
-## 3. Arquitetura do Sistema Multiagente
+O Zelo evoluiu de um protótipo isolado para um **ecossistema multi-portal navegável em tempo real**, conectando as 3 pontas da atenção básica do SUS:
 
 ```mermaid
-graph TD
-    C([Cidadão: Texto ou Voz]) -->|1. Solicitação Natural| A1[Agente 1: Acolhimento e Triagem]
-    R([Recepção UBS / Rosana]) -->|Atualização de Status/Falta| A2[Agente 2: Sentinela Operacional]
-
-    subgraph Núcleo de Orquestração e Inteligência
-        A1 -->|RAG: Matriz de Serviços| KB[(Base Oficial de Serviços UBS)]
-        A1 -->|Function Calling: Status Vivo| DB[(Banco Operacional UBS)]
-        A1 -->|Guardrails Clínicos| G[Bloqueio Estrito de Diagnóstico/Prescrição]
-        
-        A2 -->|Varredura de Pacientes Afetados| DB
-        A2 -->|Busca Unidade Alternativa| KB
+graph LR
+    subgraph 1. Cidadão
+        C([Dona Maria]) <--> A1[Agente 1: Acolhimento]
     end
 
-    A1 -->|2. Recomendação Assertiva / Alerta Não Saia de Casa| C
-    A2 -->|3. Alerta Preventivo WhatsApp / Reagendamento| C
-    A2 -->|Painel de Demanda Reprimida| M([Gestor Municipal de Saúde])
+    subgraph 2. Unidade de Saúde
+        R([Recepção / Rosana]) -->|Interrupção de Sala| A2[Agente 2: Sentinela]
+        A2 -->|Aviso Preventivo WhatsApp| C
+    end
+
+    subgraph 3. Gestão Municipal B2G
+        M([Secretaria de Saúde / Marcelo]) <--> DB[(KPIs & Demanda Reprimida)]
+    end
 ```
 
+### 👤 1. Portal do Cidadão (Acolhimento & Triagem)
+- **Foco:** Idosos, famílias e trabalhadores.
+- **Chat com Agente 1 (Google Gemini):** RAG na matriz oficial de serviços + Function Calling de status em tempo real.
+- **Ficha Digital Zelo:** Cartão de agendamento que monitora se a sala da UBS está aberta ou em reunião técnica.
+- **Alerta Preventivo WhatsApp:** Visualização das mensagens ativas recebidas pelo cidadão para evitar viagens perdidas.
+
+### 🏥 2. Portal da Recepção da UBS (Operação Local)
+- **Foco:** Recepcionistas e enfermeiros-chefes (Persona "Rosana").
+- **Controle de Salas em Tempo Real:** Toggles com 1 clique para alterar o status das salas (Sala de Vacinas, Consultório Clínico, Odonto).
+- **Gatilho de Contingência do Sentinela:** Acionamento do Agente 2 para varrer e alertar preventivamente os pacientes agendados.
+- **Fila de Pacientes e Remanejamento:** Opção de remanejar a fila diretamente para unidades vizinhas abertas (ex: UBS San Martin).
+
+### 📊 3. Portal da Gestão Municipal (Secretaria de Saúde / B2G)
+- **Foco:** Secretário de Saúde e Diretores da Atenção Básica (Persona "Marcelo").
+- **Big Numbers de Impacto:**
+  - 🚫 **1.482 Viagens Perdidas Evitadas** no município.
+  - ⏱️ **4.890 Horas de Fila da Madrugada Poupadas**.
+  - 📉 **Redução de No-Show/Absenteísmo de 38% para 8.2%**.
+  - 💰 **R$ 194.200,00 Economizados** em custos operacionais e transporte sanitário.
+- **Mapeamento da Demanda Real:** Gráfico de distribuição de pedidos identificados via IA em linguagem natural.
+- **Auditoria de IA & Guardrails:** 100% de conformidade com as diretrizes do SUS (bloqueio estrito de diagnósticos).
+- **Recomendação Autônoma:** Sugestões ativas de remanejamento de profissionais entre UBSs conforme a sobrecarga.
+
 ---
 
-## 4. Pilares de Engenharia e IA Implementados
-1. **Agente 1 (Acolhimento & Triagem):** Interage com o cidadão via linguagem natural acessível, consulta a matriz oficial de serviços via **RAG**, valida a viabilidade operacional em tempo real via **Function Calling** nativo e alerta com firmeza quando o posto está temporariamente fechado, impedindo a perda de viagem.
-2. **Agente 2 (Sentinela Operacional):** Roda na retaguarda. Ao receber sinal da recepção de que uma sala fechou (ex: reunião interna de enfermagem ou falta médica), o agente varre autonomamente a fila de pacientes afetados e dispara alertas preventivos no WhatsApp, com reagendamento automático.
-3. **Guardrails de Segurança (Regra de Ouro):** Bloqueio estrito de diagnósticos, prescrições e análise de sintomas médicos, mantendo a atuação 100% administrativa, acolhedora e alinhada às diretrizes do SUS.
-4. **Resiliência Multi-Provider:** Integração com **Google Gemini** (`gemini-3.1-flash-lite` / `@google/genai`) com motor determinístico autônomo de resguardo caso ocorra oscilação de rede no momento do pitch.
+## 🛠️ Tecnologias
+- **Backend:** Node.js, Express, `@google/genai` (SDK oficial do Google Gemini).
+- **Modelo de IA:** Google Gemini (`gemini-3.1-flash-lite` com Function Calling multi-turno).
+- **Frontend:** SPA responsiva moderna com navegação fluida entre os 3 portais sem recarregar a página.
 
 ---
 
-## 5. Como Executar o Projeto Localmente
+## 🚀 Como Executar o Projeto
 
-### Pré-requisitos
-- **Node.js** (v18+)
-- **NPM** (v9+)
-
-### Passo a Passo
 ```bash
-# 1. Clone o repositório
-git clone https://github.com/Joshua-Brito/ZELO-AKCIT-CAMP.git
-cd ZELO-AKCIT-CAMP
-
-# 2. Instale as dependências
+# 1. Instale as dependências
 npm install
 
-# 3. Configure as variáveis de ambiente
-cp .env.example .env
-# Adicione sua chave do Google Gemini no arquivo .env:
+# 2. Configure sua chave no .env
 # GEMINI_API_KEY=AIzaSy...
 
-# 4. Inicie o servidor
+# 3. Inicie a aplicação
 npm start
 ```
-Acesse a aplicação no navegador em: **`http://localhost:3000`**
+Acesse no navegador: **`http://localhost:3000`**
 
----
-
-## 6. Roteiro de Demonstração para a Banca Avaliadora
-
-### 🎯 Teste 1: Function Calling + RAG (Cenário Principal da Demo)
-1. No chat do cidadão à esquerda, clique no chip rápido:  
-   > **"Preciso tomar vacina admissional hoje às 14h perto de mim"**
-2. Observe o **Terminal de Telemetria da IA** à direita:
-   - A IA consulta o **Catálogo Oficial (RAG)** e descarta a **UBS A** (a 4 min) porque ela não oferece vacina.
-   - A IA invoca `consultar_status_ao_vivo(ubs_id: "ubs_B")`.
-   - O status ao vivo revela: `em_reuniao_interna` (Sala de Vacina temporariamente fechada para reunião técnica).
-   - O Agente 1 alerta: **"NÃO SAIA DE CASA AGORA PARA A UBS MAIS PRÓXIMA!"**, explicando o imprevisto e sugerindo a UBS San Martin ou reagendamento para amanhã às 08h.
-
-### 🛡️ Teste 2: Guardrail Clínico Ativo
-1. Clique no botão de teste de guardrail:  
-   > **"Estou com dor de cabeça e febre, qual remédio eu tomo agora?"**
-2. A banca verá o terminal registrar `[GUARDRAIL ATIVADO]` com bloqueio de prescrição médica e o agente orientando acolhimento logístico e serviços de emergência (SAMU 192 / UPA).
-
-### 🚨 Teste 3: Agente Sentinela (Agente 2)
-1. No painel operacional da recepção à direita, clique no botão:  
-   > **"Sinalizar: Reunião na Sala de Vacina (UBS Central)"**
-2. O Agente 2 acorda em background, varre a fila, localiza **Dona Maria José** e exibe na tela o **card de WhatsApp simulado** enviado preventivamente para ela com reagendamento automático.
+Alterne entre os 3 portais na barra superior:
+- `[👤 1. Portal do Cidadão]`
+- `[🏥 2. Recepção da UBS]`
+- `[📊 3. Gestão Municipal]`
