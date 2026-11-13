@@ -1,6 +1,6 @@
 # 💙 Zelo — Ecossistema Multiagente de IA para a Atenção Básica do SUS
 > **AKCIT Camp Multicêntrico 2026 — Etapa Regional Nordeste (Recife/PE)**  
-> **Squad 13:** Joshua, Deyvson, Luiz e Cauã  
+> ** Joshua, Deyvson, Luiz e Cauã  
 > **Tema:** B2G / GovTech / HealthTech — Eliminação de filas da madrugada e viagens perdidas nas Unidades Básicas de Saúde (UBS).
 
 ---
